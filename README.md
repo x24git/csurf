@@ -1,11 +1,15 @@
-# csurf
+# csurf-expire
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
-[![Build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
+
+### This is a fork of the excellent [csurf library](https://github.com/expressjs/csurf) extending its functionality by preventing expired cookies from being allowed to send requests.
+
+>The only change is that when using the cookie option and setting the `maxAge` paratmeter, any cookie that has exceeded the `maxAge` parameter will be rejected and a 403 error will be generated. This should not be a problem for normal users, as a new cookie and CSRF token is generated on each request. If you wish to set a `maxAge` on the cookie without rejecting expired cookies, then you can set the expires parameter on the cookie instead. This does not apply when using session middleware.
 
 Node.js [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection middleware.
+
+
 
 Requires either a session middleware or [cookie-parser](https://www.npmjs.com/package/cookie-parser) to be initialized first.
 
@@ -26,7 +30,7 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```sh
-$ npm install csurf
+$ npm install csurf-expire
 ```
 
 ## API
@@ -34,7 +38,7 @@ $ npm install csurf
 <!-- eslint-disable no-unused-vars -->
 
 ```js
-var csurf = require('csurf')
+var csurf = require('csurf-expire')
 ```
 
 ### csurf([options])
@@ -68,6 +72,7 @@ following keys:
   - `key` - the name of the cookie to use to store the token secret
     (defaults to `'_csrf'`).
   - `path` - the path of the cookie (defaults to `'/'`).
+  - **`maxAge` - the maximum age the cookie can be before it expires in seconds. Setting this parameter will cause a 403 response if any cookie and csfr token is sent beyond the maxAge window**
   - any other [res.cookie](http://expressjs.com/4x/api.html#res.cookie)
     option can be set.
 
@@ -111,12 +116,12 @@ that requires a CSRF token to post back.
 
 ```js
 var cookieParser = require('cookie-parser')
-var csrf = require('csurf')
+var csrf = require('csurf-expire')
 var bodyParser = require('body-parser')
 var express = require('express')
 
 // setup route middlewares
-var csrfProtection = csrf({ cookie: true })
+var csrfProtection = csrf({ cookie: { maxAge: 60 * 60 * 8 } })
 var parseForm = bodyParser.urlencoded({ extended: false })
 
 // create express app
@@ -204,7 +209,7 @@ do not check for a valid CSRF token.
 
 ```js
 var cookieParser = require('cookie-parser')
-var csrf = require('csurf')
+var csrf = require('csurf-expire')
 var bodyParser = require('body-parser')
 var express = require('express')
 
@@ -220,7 +225,7 @@ app.use('/api', api)
 // now add csrf and other middlewares, after the "/api" was mounted
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(csrf({ cookie: true }))
+app.use(csrf({ cookie: { maxAge: 60 * 60 * 8 } }))
 
 app.get('/form', function (req, res) {
   // pass the csrfToken to the view
@@ -251,7 +256,7 @@ error messages.
 ```js
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
-var csrf = require('csurf')
+var csrf = require('csurf-expire')
 var express = require('express')
 
 var app = express()
@@ -273,11 +278,7 @@ app.use(function (err, req, res, next) {
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/csurf.svg
-[npm-url]: https://npmjs.org/package/csurf
-[travis-image]: https://img.shields.io/travis/expressjs/csurf/master.svg
-[travis-url]: https://travis-ci.org/expressjs/csurf
-[coveralls-image]: https://img.shields.io/coveralls/expressjs/csurf/master.svg
-[coveralls-url]: https://coveralls.io/r/expressjs/csurf?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/csurf.svg
-[downloads-url]: https://npmjs.org/package/csurf
+[npm-image]: https://img.shields.io/npm/v/csurf-expire.svg
+[npm-url]: https://npmjs.org/package/csurf-expire
+[downloads-image]: https://img.shields.io/npm/dm/csurf-expire.svg
+[downloads-url]: https://npmjs.org/package/csurf-expire
