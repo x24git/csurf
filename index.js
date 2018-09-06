@@ -89,7 +89,7 @@ function csurf (options) {
       // generate & set new secret
       if (sec === undefined) {
         sec = tokens.secretSync()
-        sec = setExpirey(sec, cookie)
+        sec = setExpiry(sec, cookie)
         setSecret(req, res, sessionKey, sec, cookie)
       }
 
@@ -105,7 +105,7 @@ function csurf (options) {
     // generate & set secret
     if (!secret) {
       secret = tokens.secretSync()
-      secret = setExpirey(secret, cookie)
+      secret = setExpiry(secret, cookie)
       setSecret(req, res, sessionKey, secret, cookie)
     }
 
@@ -235,14 +235,14 @@ function getSecretBag (req, sessionKey, cookie) {
 }
 
 /**
- * Set an expirey time on the cookie.
+ * Set an expiry time on the cookie.
  *
  * @param {string} val
  * @param {Object} [options]
  * @api private
  */
 
-function setExpirey (val, options) {
+function setExpiry (val, options) {
   var secret = val
   if (options) {
     if (options.maxAge) {
